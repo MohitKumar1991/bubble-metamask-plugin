@@ -1,8 +1,9 @@
-import { providers, Contract, utils} from 'ethers';
+import { providers, Contract } from 'ethers';
+
 if(!window.ethereum) {
     alert('No metamask found');
 } else {
-    window.DEFAULT_TOKEN_ADDS = {
+    const DEFAULT_TOKEN_ADDS = {
         "0x13881": {
             name:"matic test",
             contract: "0xB2E674F91130ceF37095039B1A76D4bB9Bd0e8bB"
@@ -12,12 +13,22 @@ if(!window.ethereum) {
             contract: "0x00e6fd5b2c0c48e4c88c29c3476f7c5fbeeae400"
         },
         "0x89": {
-            name:"matic main",
+            name:"matic",
             contract: "0xB2E674F91130ceF37095039B1A76D4bB9Bd0e8bB"
+        },
+        "0x4": {
+            name:"rinkeby"
+        },
+        "0x5": {
+            name: "goerli"
+        },
+        "0x1": {
+            name:"ethereum"
         }
     };
-    const chainId = ethereum.chainId in window.DEFAULT_TOKEN_ADDS ? ethereum.chainId : '0x13881';
-    const contractAddress = window.CONTRACT_ADDRESS || window.DEFAULT_TOKEN_ADDS[chainId].contract;
+    window.DTA = DEFAULT_TOKEN_ADDS;
+    const chainId = ethereum.chainId in DEFAULT_TOKEN_ADDS ? ethereum.chainId : '0x13881';
+    const contractAddress = window.CONTRACT_ADDRESS || DEFAULT_TOKEN_ADDS[chainId].contract;
     const contractABI = window.CONTRACT_ABI ? JSON.parse(window.CONTRACT_ABI) : [
         {
             "constant": true,
@@ -257,12 +268,25 @@ if(!window.ethereum) {
     const MMLib = {};
     
     window.MMLib = MMLib;
+    
     MMLib.enabled = false;
 
     MMLib.init = function initLib() {
+        
         if(MMLib.enabled) { return Promise.resolve(true); }
         else{
-            return web3.enable().then((accounts) => {
+            web3.request({ method: 'eth_chainId' }).then((chainId) => {
+                MMLib.chainName = chainId in DEFAULT_TOKEN_ADDS ? DEFAULT_TOKEN_ADDS[web3.chainId].name: null;
+                console.error(chainId + ' - setting chainName to ' + MMLib.chainName);
+            });
+            
+            web3.on('chainChanged', (chainId) => {
+                //this should disable when chain is changed
+                MMLib.chainName = chainId in DEFAULT_TOKEN_ADDS ? DEFAULT_TOKEN_ADDS[chainId].name: null;
+                console.error(chainId + ' setting chainName to ' + MMLib.chainName);
+              });
+              
+            return web3.request({ method: 'eth_requestAccounts' }).then((accounts) => {
                 //    window.provider = EthProvider;
                     MMLib.enabled = true;
                     MMLib.contractInstance = new Contract(contractAddress, contractABI,  EthProvider.getSigner());
@@ -270,7 +294,6 @@ if(!window.ethereum) {
         }
        
     }
-
 
     MMLib.getSigningAccount = function getSigningAccount() {
         return web3.enable().then((accounts) => {

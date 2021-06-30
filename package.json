@@ -1,0 +1,39 @@
+{
+  "name": "bubbleplugin",
+  "version": "1.0.0",
+  "description": "This plugin can be used to access web3 functionality from bubble",
+  "main": "client/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "buffer": "^6.0.3",
+    "ethers": "^5.3.1",
+    "ethjs": "^0.4.0",
+    "http-server": "^0.12.3",
+    "solc": "^0.8.5",
+    "truffle": "^5.3.11",
+    "webpack-cli": "^4.7.2",
+    "webpack": "^5.40.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "mocha",
+    "bundle-dev": "webpack bundle ./client/index.js --mode development --watch  -d inline-nosources-cheap-source-map",
+    "bundle":  "webpack bundle ./client/index.js --mode production -d source-map -o distprod"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MohitKumar1991/bubble-metamask-plugin.git"
+  },
+  "keywords": [
+    "metamask",
+    "bubble"
+  ],
+  "author": "mohitjandwani",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MohitKumar1991/bubble-metamask-plugin/issues"
+  },
+  "homepage": "https://github.com/MohitKumar1991/bubble-metamask-plugin#readme"
+}
